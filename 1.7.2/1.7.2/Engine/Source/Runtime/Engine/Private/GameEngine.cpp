@@ -29,7 +29,7 @@ void* Misc::DispatchRequest(void* Arg1, void* MCPData, int)
 void Misc::Listen(UWorld *World) {
 	auto Engine = UEngine::GetEngine();
 	auto NetDriverName = FName(L"GameNetDriver");
-	auto NetDriver = World->NetDriver = ((UNetDriver * (*)(UEngine*, UWorld*, FName))(ImageBase + Sarah::Offsets::CreateNetDriver))(Engine, World, NetDriverName);
+	auto NetDriver = World->NetDriver = ((UNetDriver * (*)(UEngine*, UWorld*, FName))(ImageBase + Tung::Offsets::CreateNetDriver))(Engine, World, NetDriverName);
 
 	NetDriver->NetDriverName = NetDriverName;
 	NetDriver->World = World;
@@ -67,15 +67,15 @@ void Misc::ApplyHomebaseEffectsOnPlayerSetup(
 
 void Misc::Hook() {
 	Utils::Hook(ImageBase + 0x2629e60, Listen);
-	Utils::Hook(ImageBase + Sarah::Offsets::GetNetMode, GetNetMode);
-	Utils::Hook(ImageBase + Sarah::Offsets::GetMaxTickRate, GetMaxTickRate, GetMaxTickRateOG);
-	Utils::Hook(ImageBase + Sarah::Offsets::TickFlush, TickFlush, TickFlushOG);
-	Utils::Hook(ImageBase + Sarah::Offsets::DispatchRequest, DispatchRequest, DispatchRequestOG);
+	Utils::Hook(ImageBase + Tung::Offsets::GetNetMode, GetNetMode);
+	Utils::Hook(ImageBase + Tung::Offsets::GetMaxTickRate, GetMaxTickRate, GetMaxTickRateOG);
+	Utils::Hook(ImageBase + Tung::Offsets::TickFlush, TickFlush, TickFlushOG);
+	Utils::Hook(ImageBase + Tung::Offsets::DispatchRequest, DispatchRequest, DispatchRequestOG);
 	Utils::Patch<uint8_t>(ImageBase + EncryptionPatch, 0x74);
 	Utils::Patch<uint8_t>(ImageBase + GameSessionPatch, 0x85);
-	for (auto& NullFunc : Sarah::Offsets::NullFuncs)
+	for (auto& NullFunc : Tung::Offsets::NullFuncs)
 		Utils::Patch<uint8_t>(ImageBase + NullFunc, 0xc3);
-	for (auto& RetTrueFunc : Sarah::Offsets::RetTrueFuncs) {
+	for (auto& RetTrueFunc : Tung::Offsets::RetTrueFuncs) {
 		Utils::Patch<uint32_t>(ImageBase + RetTrueFunc, 0xc0ffc031);
 		Utils::Patch<uint8_t>(ImageBase + RetTrueFunc + 4, 0xc3);
 	}

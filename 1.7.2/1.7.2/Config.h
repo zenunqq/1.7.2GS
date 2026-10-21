@@ -18,7 +18,7 @@ namespace UC {
 }
 class FFrame;
 
-namespace Sarah {
+namespace Tung {
     inline auto ImageBase = *(uint64_t*)(__readgsqword(0x60) + 0x10);
     namespace Offsets {
         inline uint64_t Step = 0x13e0650;
@@ -54,7 +54,7 @@ namespace Sarah {
         inline auto StaticLoadObject = (SDK::UObject * (*)(SDK::UClass*, SDK::UObject*, const wchar_t*, const wchar_t*, uint32_t, SDK::UObject*, bool)) (ImageBase + Offsets::StaticLoadObject);
     };
 };
-using namespace Sarah;
-using namespace Sarah::Offsets;
-using namespace Sarah::Vfts;
-using namespace Sarah::Funcs;
+using namespace Tung;
+using namespace Tung::Offsets;
+using namespace Tung::Vfts;
+using namespace Tung::Funcs;

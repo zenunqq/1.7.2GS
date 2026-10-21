@@ -316,7 +316,7 @@ namespace UC
 	{
 	public:
 		static void* InternalRealloc(void* _a1, __int64 _a2, unsigned int _a3) {
-			return Sarah::Funcs::Realloc(_a1, _a2, _a3);
+			return Tung::Funcs::Realloc(_a1, _a2, _a3);
 		}
 
 		template<typename T = void>

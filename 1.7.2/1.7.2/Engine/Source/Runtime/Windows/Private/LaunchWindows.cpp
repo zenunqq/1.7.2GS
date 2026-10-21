@@ -7,7 +7,7 @@ void Main() {
     AllocConsole();
     FILE* f;
     freopen_s(&f, "CONOUT$", "w", stdout);
-    SetConsoleTitleA("Sarah 1.7.2: Setting up");
+    SetConsoleTitleA("Tung 1.7.2: Setting up");
     LogCategory = FName(L"LogGameserver");
 
     Sleep(2000);
@@ -18,7 +18,7 @@ void Main() {
     MH_EnableHook(MH_ALL_HOOKS);
     srand((uint32_t)time(0));
 
-    *(bool*)(ImageBase + Sarah::Offsets::GIsClient) = false;
+    *(bool*)(ImageBase + Tung::Offsets::GIsClient) = false;
 
     UWorld::GetWorld()->OwningGameInstance->LocalPlayers.Remove(0);
     UKismetSystemLibrary::ExecuteConsoleCommand(UWorld::GetWorld(), L"open Athena_Terrain", nullptr);

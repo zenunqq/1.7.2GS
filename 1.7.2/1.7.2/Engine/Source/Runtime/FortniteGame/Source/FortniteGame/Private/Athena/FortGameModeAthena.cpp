@@ -107,7 +107,7 @@ void GameMode::ReadyToStartMatch(UObject* Context, FFrame& Stack, bool* Ret) {
 
 		GameMode->DefaultPawnClass = Utils::FindObject<UClass>(PawnClassPath);
 		Utils::Patch<uint8>(ImageBase + NullFuncOffset, 0xc3);
-		SetConsoleTitleA("Sarah 1.7.2: Ready");
+		SetConsoleTitleA("Tung 1.7.2: Ready");
 		GameMode->bWorldIsReady = true;
 	}
 
