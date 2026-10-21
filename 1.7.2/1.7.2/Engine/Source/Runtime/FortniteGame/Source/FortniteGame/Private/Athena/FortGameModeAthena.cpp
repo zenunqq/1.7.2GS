@@ -1,19 +1,83 @@
 #include "pch.h"
+#include <vector>
 #include "FortGameModeAthena.h"
 #include "GameEngine.h"
 #include "AbilitySystemComponent.h"
 #include "FortPlayerControllerAthena.h"
 #include "FortInventory.h"
 
-void SetPlaylist(AFortGameModeAthena* GameMode) {
-	auto GameState = (AFortGameStateAthena*)GameMode->GameState;
+namespace {
+	constexpr int32 DefaultPlaylistId = 1;
+	constexpr uint64_t NullFuncOffset = 0x137DBC0;
+	constexpr uint64_t ApplyCharacterPartsOffset = 0x217db10;
+	const wchar_t* AbilitySetPath = L"/Game/Abilities/Player/Generic/Traits/DefaultPlayer/GAS_DefaultPlayer.GAS_DefaultPlayer";
+	const wchar_t* PawnClassPath = L"/Game/Athena/PlayerPawn_Athena.PlayerPawn_Athena_C";
+	const wchar_t* PickaxePath = L"/Game/Athena/Items/Weapons/WID_Harvest_Pickaxe_Athena_C_T01.WID_Harvest_Pickaxe_Athena_C_T01";
 
-	GameState->CurrentPlaylistId = GameMode->CurrentPlaylistId = 1;
+	void SetPlaylist(AFortGameModeAthena* GameMode) {
+		auto GameState = (AFortGameStateAthena*)GameMode->GameState;
+		GameState->CurrentPlaylistId = GameMode->CurrentPlaylistId = DefaultPlaylistId;
+		GameMode->bAlwaysDBNO = false;
+	}
 
-	GameMode->bAlwaysDBNO = false;
+	bool IsStartingItem(AFortGameModeAthena* GameMode, UFortItemDefinition* Definition) {
+		static auto Pickaxe = Utils::FindObject<UFortItemDefinition>(PickaxePath);
+		if (Definition == Pickaxe)
+			return true;
+		for (auto& StartingItem : GameMode->StartingItems)
+			if (StartingItem.Item == Definition)
+				return true;
+		return false;
+	}
+
+	void RemoveNonStartingItems(AFortGameModeAthena* GameMode, AFortPlayerControllerAthena* PlayerController) {
+		std::vector<FGuid> ToRemove;
+		for (auto& Entry : PlayerController->WorldInventory->Inventory.ReplicatedEntries)
+			if (!IsStartingItem(GameMode, Entry.ItemDefinition))
+				ToRemove.push_back(Entry.ItemGuid);
+
+		for (auto& Guid : ToRemove)
+			Inventory::Remove(PlayerController, Guid);
+	}
+
+	void GiveStartingItems(AFortGameModeAthena* GameMode, AFortPlayerControllerAthena* PlayerController) {
+		Inventory::GiveItem(PlayerController, Utils::FindObject<UFortItemDefinition>(PickaxePath));
+		for (auto& StartingItem : GameMode->StartingItems)
+			if (StartingItem.Item && StartingItem.Count)
+				Inventory::GiveItem(PlayerController, StartingItem.Item, StartingItem.Count);
+	}
+
+	void ApplyRandomHero(AFortPlayerStateAthena* PlayerState) {
+		static std::vector<UFortHeroType*> HeroTypes;
+		if (HeroTypes.empty()) {
+			for (int i = 0; i < UObject::GObjects->Num(); i++) {
+				auto Object = UObject::GObjects->GetByIndex(i);
+				if (!Object)
+					continue;
+				auto HeroType = Object->Cast<UFortHeroType>();
+				if (!HeroType)
+					continue;
+				if (UKismetSystemLibrary::GetPathName(HeroType).ToString().starts_with("/Game/Athena/Heroes/"))
+					HeroTypes.push_back(HeroType);
+			}
+		}
+
+		if (HeroTypes.empty())
+			return;
+
+		static std::mt19937 Generator{ std::random_device{}() };
+		std::uniform_int_distribution<size_t> Distribution(0, HeroTypes.size() - 1);
+
+		for (auto& Specialization : HeroTypes[Distribution(Generator)]->Specializations) {
+			if (!Specialization)
+				continue;
+			for (auto& Part : Specialization->CharacterParts)
+				if (Part)
+					PlayerState->CharacterParts[(int)Part->CharacterPartType] = Part;
+		}
+	}
 }
 
-bool bReady = false;
 void GameMode::ReadyToStartMatch(UObject* Context, FFrame& Stack, bool* Ret) {
 	Stack.IncrementCode();
 	auto GameMode = Context->Cast<AFortGameModeAthena>();
@@ -22,11 +86,11 @@ void GameMode::ReadyToStartMatch(UObject* Context, FFrame& Stack, bool* Ret) {
 		return;
 	}
 	auto GameState = ((AFortGameStateAthena*)GameMode->GameState);
-	static bool bWhy = false;
-	if (!bWhy) {
-		bWhy = true;
-		GameMode->WarmupRequiredPlayerCount = 1;
 
+	static bool bInitialized = false;
+	if (!bInitialized) {
+		bInitialized = true;
+		GameMode->WarmupRequiredPlayerCount = 1;
 		SetPlaylist(GameMode);
 	}
 
@@ -39,10 +103,10 @@ void GameMode::ReadyToStartMatch(UObject* Context, FFrame& Stack, bool* Ret) {
 			return;
 		}
 
-		AbilitySets.Add(Utils::FindObject<UFortAbilitySet>(L"/Game/Abilities/Player/Generic/Traits/DefaultPlayer/GAS_DefaultPlayer.GAS_DefaultPlayer"));
+		AbilitySets.Add(Utils::FindObject<UFortAbilitySet>(AbilitySetPath));
 
-		GameMode->DefaultPawnClass = Utils::FindObject<UClass>(L"/Game/Athena/PlayerPawn_Athena.PlayerPawn_Athena_C");
-		Utils::Patch<uint8>(ImageBase + 0x137DBC0, 0xc3);
+		GameMode->DefaultPawnClass = Utils::FindObject<UClass>(PawnClassPath);
+		Utils::Patch<uint8>(ImageBase + NullFuncOffset, 0xc3);
 		SetConsoleTitleA("Sarah 1.7.2: Ready");
 		GameMode->bWorldIsReady = true;
 	}
@@ -56,115 +120,56 @@ APawn* GameMode::SpawnDefaultPawnFor(UObject* Context, FFrame& Stack, APawn** Re
 	Stack.StepCompiledIn(&NewPlayer);
 	Stack.StepCompiledIn(&StartSpot);
 	Stack.IncrementCode();
+
 	auto GameMode = (AFortGameModeAthena*)Context;
 	auto Transform = StartSpot->GetTransform();
 	auto Pawn = GameMode->SpawnDefaultPawnAtTransform(NewPlayer, Transform);
 
 	auto PlayerController = NewPlayer->Cast<AFortPlayerControllerAthena>();
-	if (!PlayerController) return *Ret = Pawn;
+	if (!PlayerController || !PlayerController->WorldInventory)
+		return *Ret = Pawn;
 
-	auto Num = PlayerController->WorldInventory->Inventory.ReplicatedEntries.Num();
-	if (Num != 0) {
-		//PlayerController->WorldInventory->Inventory.ReplicatedEntries.ResetNum();
-		//PlayerController->WorldInventory->Inventory.ItemInstances.ResetNum();
-		bool bStarting = false;
-		for (auto& Entry : PlayerController->WorldInventory->Inventory.ReplicatedEntries)
-		{
-			for (auto& StartingItem : ((AFortGameModeAthena*)GameMode)->StartingItems)
-				if (StartingItem.Item == Entry.ItemDefinition)
-					bStarting = true;
-			
-			if (!bStarting)
-				Inventory::Remove(PlayerController, Entry.ItemGuid);
-		}
-	}
-	else 
-	{
-		Inventory::GiveItem(PlayerController, Utils::FindObject<UFortItemDefinition>(L"/Game/Athena/Items/Weapons/WID_Harvest_Pickaxe_Athena_C_T01.WID_Harvest_Pickaxe_Athena_C_T01"));
-		for (auto& StartingItem : ((AFortGameModeAthena*)GameMode)->StartingItems)
-		{
-			if (StartingItem.Count)
-			{
-				Inventory::GiveItem(PlayerController, StartingItem.Item, StartingItem.Count);
-			}
-		}
+	if (PlayerController->WorldInventory->Inventory.ReplicatedEntries.Num() != 0) {
+		RemoveNonStartingItems(GameMode, PlayerController);
+		return *Ret = Pawn;
 	}
 
+	GiveStartingItems(GameMode, PlayerController);
 
-	if (Num == 0)
-	{
-		auto PlayerState = (AFortPlayerStateAthena*)PlayerController->PlayerState;
+	auto PlayerState = (AFortPlayerStateAthena*)PlayerController->PlayerState;
+	for (auto& AbilitySet : AbilitySets)
+		Abilities::GiveAbilitySet(PlayerState->AbilitySystemComponent, AbilitySet);
 
-		for (auto& AbilitySet : AbilitySets)
-			Abilities::GiveAbilitySet(PlayerState->AbilitySystemComponent, AbilitySet);
+	ApplyRandomHero(PlayerState);
 
-
-		/**lstatic auto Head = Utils::FindObject<UCustomCharacterPart>(L"/Game/Characters/CharacterParts/Female/Medium/Heads/F_Med_Head1.F_Med_Head1");
-		static auto Body = Utils::FindObject<UCustomCharacterPart>(L"/Game/Characters/CharacterParts/Female/Medium/Bodies/F_Med_Soldier_01.F_Med_Soldier_01");
-		PlayerState->CharacterParts[(int)EFortCustomPartType::Head] = Head;
-		PlayerState->CharacterParts[(int)EFortCustomPartType::Body] = Body;*/
-
-
-		TArray<UFortHeroType*> HeroTypes;
-		for (int i = 0; i < UObject::GObjects->Num(); i++)
-		{
-			auto HeroType = UObject::GObjects->GetByIndex(i)->Cast<UFortHeroType>();
-			if (UKismetSystemLibrary::GetPathName(HeroType).ToString().starts_with("/Game/Athena/Heroes/"))
-				HeroTypes.Add(HeroType);
-		}
-
-		std::random_device rd;
-		std::mt19937 gen(rd());
-		std::uniform_int_distribution<std::size_t> dist(0, HeroTypes.Num() - 1); // maps the random number to [0..number of words]
-
-		for (auto& Spec : HeroTypes[int32(dist(gen))]->Specializations)
-		{
-			for (auto& Part : Spec->CharacterParts)
-			{
-				PlayerState->CharacterParts[(int) Part->CharacterPartType] = Part;
-			}
-		}
-
-		((void (*)(APlayerState*, APawn*)) (ImageBase + 0x217db10))(PlayerController->PlayerState, Pawn);
-	}
+	((void (*)(APlayerState*, APawn*))(ImageBase + ApplyCharacterPartsOffset))(PlayerController->PlayerState, Pawn);
 
 	return *Ret = Pawn;
 }
 
 EFortTeam GameMode::PickTeam(AFortGameModeAthena* GameMode, uint8_t PreferredTeam, AFortPlayerControllerAthena* Controller) {
-	uint8_t ret = CurrentTeam;
+	uint8_t Team = CurrentTeam;
 
 	if (++PlayersOnCurTeam >= 1) {
 		CurrentTeam++;
 		PlayersOnCurTeam = 0;
 	}
 
-	return EFortTeam(ret);
+	return EFortTeam(Team);
 }
-
-UClass** GetGameSessionClass(AFortGameMode*, UClass** OutClass) {
-	*OutClass = AFortGameSessionDedicated::StaticClass();
-	return OutClass;
-}
-
 
 void GameMode::HandleStartingNewPlayer(UObject* Context, FFrame& Stack) {
 	AFortPlayerControllerAthena* NewPlayer;
 	Stack.StepCompiledIn(&NewPlayer);
 	Stack.IncrementCode();
 	auto GameMode = (AFortGameModeAthena*)Context;
-	auto GameState = (AFortGameStateAthena*)GameMode->GameState;
-	AFortPlayerStateAthena* PlayerState = (AFortPlayerStateAthena*)NewPlayer->PlayerState;
 
 	return callOG(GameMode, Stack.CurrentNativeFunction, HandleStartingNewPlayer, NewPlayer);
 }
-
 
 void GameMode::Hook()
 {
 	Utils::ExecHook(L"/Script/Engine.GameMode.ReadyToStartMatch", ReadyToStartMatch, ReadyToStartMatchOG);
 	Utils::ExecHook(L"/Script/Engine.GameModeBase.SpawnDefaultPawnFor", SpawnDefaultPawnFor);
-	//Utils::Hook(ImageBase + 0x444620, PickTeam, PickTeamOG);
 	Utils::ExecHook(L"/Script/Engine.GameModeBase.HandleStartingNewPlayer", HandleStartingNewPlayer, HandleStartingNewPlayerOG);
-	//Utils::Hook(Sarah::Offsets::ImageBase + 0x19A2D44, GetGameSessionClass);
 }
