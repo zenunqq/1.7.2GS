@@ -12,7 +12,7 @@
 #include <array>
 #include <tlhelp32.h>
 #include <future>
-#include <iomanip>  
+#include <iomanip>
 #include <set>
 #include <random>
 #include <execution>

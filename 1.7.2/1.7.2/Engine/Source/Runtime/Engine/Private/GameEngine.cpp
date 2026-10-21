@@ -7,7 +7,7 @@ int Misc::GetNetMode() {
 }
 
 float Misc::GetMaxTickRate(UEngine* Engine, float DeltaTime, bool bAllowFrameRateSmoothing) {
-	// improper, DS is supposed to do hitching differently
+
 	return std::clamp(1.f / DeltaTime, 1.f, 30.f);
 }
 
@@ -39,14 +39,13 @@ void Misc::Listen(UWorld *World) {
 	FURL imlazy;
 	imlazy.Port = 7777;
 	FString Err;
-	if (Funcs::InitListen(NetDriver, World, /*World->PersistentLevel->URL*/ imlazy, false, Err)) {
+	if (Funcs::InitListen(NetDriver, World,  imlazy, false, Err)) {
 		Funcs::SetWorld(NetDriver, World);
 	}
 	else {
 		Log(L"Failed to listen");
 	}
 }
-
 
 bool Misc::RetFalse()
 {

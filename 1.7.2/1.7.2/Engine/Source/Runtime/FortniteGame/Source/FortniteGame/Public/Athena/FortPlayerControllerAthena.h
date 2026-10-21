@@ -2,7 +2,6 @@
 #include "pch.h"
 #include "HookingLibrary.h"
 
-
 class Player {
 private:
 	DefUHookOg(ServerReadyToStartMatch);
@@ -27,7 +26,6 @@ private:
 	static void ServerAttemptInventoryDrop(UObject*, FFrame&);
 
 	DefHookOg(void, OnCapsuleBeginOverlap, UObject*, FFrame&);
-
 
 	InitHooks;
 };

@@ -2,43 +2,33 @@
 #include "pch.h"
 #include "HookingLibrary.h"
 
-
 struct FAbilityReplicatedData
 {
-	/** Event has triggered */
+
 	bool bTriggered;
 
-	/** Optional Vector payload for event */
 	FVector_NetQuantize100 VectorPayload;
 
-	/** Delegate that will be called on replication */
 	TMulticastInlineDelegate<void()> Delegate;
 };
 
 struct FAbilityReplicatedDataCache
 {
-	/** What elements this activation is targeting */
+
 	FGameplayAbilityTargetDataHandle TargetData;
 
-	/** What tag to pass through when doing an application */
 	FGameplayTag ApplicationTag;
 
-	/** True if we've been positively confirmed our targeting, false if we don't know */
 	bool bTargetConfirmed;
 
-	/** True if we've been positively cancelled our targeting, false if we don't know */
 	bool bTargetCancelled;
 
-	/** Delegate to call whenever this is modified */
 	TDelegate<void(FGameplayAbilityTargetDataHandle&, FGameplayTag)> TargetSetDelegate;
 
-	/** Delegate to call whenever this is confirmed (without target data) */
 	TMulticastInlineDelegate<void()> TargetCancelledDelegate;
 
-	/** Generic events that contain no payload data */
 	FAbilityReplicatedData	GenericEvents[12];
 
-	/** Prediction Key when this data was set */
 	FPredictionKey PredictionKey;
 };
 

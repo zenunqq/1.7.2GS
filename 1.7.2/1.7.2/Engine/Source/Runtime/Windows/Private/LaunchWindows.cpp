@@ -1,4 +1,3 @@
-// dllmain.cpp : Defines the entry point for the DLL application.
 #include "pch.h"
 #include "HookingLibrary.h"
 #include "NetDriver.h"
@@ -10,8 +9,7 @@ void Main() {
     freopen_s(&f, "CONOUT$", "w", stdout);
     SetConsoleTitleA("Sarah 1.7.2: Setting up");
     LogCategory = FName(L"LogGameserver");
-    //auto FrontEndGameMode = (AFortGameMode*)UWorld::GetWorld()->AuthorityGameMode;
-    //while (FrontEndGameMode->MatchState != FName(L"InProgress"));
+
     Sleep(2000);
 
     MH_Initialize();
@@ -21,7 +19,7 @@ void Main() {
     srand((uint32_t)time(0));
 
     *(bool*)(ImageBase + Sarah::Offsets::GIsClient) = false;
-    //*(bool*)(ImageBase + Sarah::Offsets::GIsClient + 1) = true;
+
     UWorld::GetWorld()->OwningGameInstance->LocalPlayers.Remove(0);
     UKismetSystemLibrary::ExecuteConsoleCommand(UWorld::GetWorld(), L"open Athena_Terrain", nullptr);
 }
@@ -42,4 +40,3 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     }
     return TRUE;
 }
-

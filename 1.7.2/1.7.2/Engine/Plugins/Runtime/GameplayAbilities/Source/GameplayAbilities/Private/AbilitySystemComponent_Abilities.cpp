@@ -14,7 +14,6 @@ void ConsumeAllReplicatedData(UFortAbilitySystemComponentAthena* AbilitySystemCo
     }
 }
 
-
 void Abilities::InternalServerTryActivateAbility(UFortAbilitySystemComponentAthena* AbilitySystemComponent, FGameplayAbilitySpecHandle Handle, bool InputPressed, FPredictionKey& PredictionKey, FGameplayEventData* TriggerEventData) {
     auto Spec = AbilitySystemComponent->ActivatableAbilities.Items.Search([&](FGameplayAbilitySpec& item) {
         return item.Handle.Handle == Handle.Handle;

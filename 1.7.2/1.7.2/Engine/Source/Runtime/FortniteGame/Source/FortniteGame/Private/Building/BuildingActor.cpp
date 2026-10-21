@@ -60,9 +60,7 @@ void Building::ServerCreateBuildingActor(UObject* Context, FFrame& Stack)
 	Building->bPlayerPlaced = true;
 	Building->InitializeKismetSpawnedBuildingActor(Building, PlayerController);
 	Building->Team = ((AFortPlayerStateAthena*)PlayerController->PlayerState)->TeamIndex;
-	//PlayerController->bBuildFree = true;
 
-	//return OG(PlayerController, CreateBuildingData);
 	return callOG(PlayerController, Stack.CurrentNativeFunction, ServerCreateBuildingActor, BuildingClassData, BuildLoc, BuildRot, bMirrored);
 }
 
@@ -85,7 +83,6 @@ void Building::ServerBeginEditingBuildingActor(UObject* Context, FFrame& Stack)
 		return;
 
 	PlayerController->ServerExecuteInventoryItem(ItemEntry->ItemGuid);
-
 
 	auto EditTool = PlayerController->MyFortPawn->CurrentWeapon->Cast<AFortWeap_EditingTool>();
 	EditTool->EditActor = Building;
@@ -177,9 +174,7 @@ void Building::OnDamageServer(ABuildingSMActor* Actor, float Damage, FGameplayTa
 	auto Resource = GetResourceItemDefinition(Actor->ResourceType);
 	if (!Resource) return OnDamageServerOG(Actor, Damage, DamageTags, Momentum, HitInfo, InstigatedBy, DamageCauser, EffectContext);
 
-
 	auto MaxMat = Resource->MaxStackSize;
-
 
 	FCurveTableRowHandle& BuildingResourceAmountOverride = Actor->BuildingResourceAmountOverride;
 	int ResCount = 0;

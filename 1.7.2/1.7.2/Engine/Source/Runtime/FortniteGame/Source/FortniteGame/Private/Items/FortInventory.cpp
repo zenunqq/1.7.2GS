@@ -129,7 +129,6 @@ UFortWorldItem* Inventory::GiveItem(AFortPlayerController* PC, FFortItemEntry en
 	return GiveItem(PC, entry.ItemDefinition, Count, entry.LoadedAmmo, entry.Level, ShowPickupNoti, updateInventory, -1);
 }
 
-
 EFortQuickBars Inventory::GetQuickbar(UFortItemDefinition* ItemDefinition)
 {
 	if (!ItemDefinition) return EFortQuickBars::Max_None;
@@ -146,7 +145,6 @@ AFortPickupAthena* Inventory::SpawnPickup(FVector Loc, FFortItemEntry& Entry, AF
 	NewPickup->PrimaryPickupItemEntry.Count = OverrideCount != -1 ? OverrideCount : Entry.Count;
 	NewPickup->OnRep_PrimaryPickupItemEntry();
 	NewPickup->PawnWhoDroppedPickup = Pawn;
-
 
 	NewPickup->TossPickup(Loc, Pawn, -1);
 	if (NewPickup->bTossedFromContainer) NewPickup->OnRep_TossedFromContainer();

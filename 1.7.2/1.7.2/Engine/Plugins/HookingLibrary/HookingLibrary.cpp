@@ -14,7 +14,6 @@ TArray<AActor*> Utils::GetAll(UClass* Class)
     return ret;
 }
 
-// Basic.hpp
 FName::FName(FString str) {
     *this = UKismetStringLibrary::Conv_StringToName(str);
 }
@@ -71,7 +70,7 @@ AActor* Utils::SpawnActor(UClass* Class, FTransform& Transform, AActor* Owner)
     addr.NameMode = ESpawnActorNameMode::Requested;
 
     return ((AActor * (*)(UWorld*, UClass*, FTransform const*, FActorSpawnParameters*))(ImageBase + 0x21d6c90))(UWorld::GetWorld(), Class, &Transform, &addr);
-    //return UGameplayStatics::FinishSpawningActor(UGameplayStatics::BeginDeferredActorSpawnFromClass(UWorld::GetWorld(), Class, Transform, ESpawnActorCollisionHandlingMethod::AlwaysSpawn, Owner), Transform);
+
 }
 
 AActor* Utils::SpawnActor(UClass* Class, FVector& Loc, FRotator& Rot, AActor* Owner)
@@ -100,14 +99,13 @@ void FFrame::StepCompiledIn(void* const Result, bool ForceExplicitProp)
     }
 }
 
-
 void FFrame::IncrementCode() {
     Code = (uint8_t*)(__int64(Code) + (bool)Code);
 }
 
 float FRotator::UnwindDegrees(float Angle) {
 
-    Angle = fmod(Angle, 360.0f); // rat
+    Angle = fmod(Angle, 360.0f);
 
     if (Angle < 0.)
         Angle += 360.f;
@@ -120,7 +118,7 @@ float FRotator::UnwindDegrees(float Angle) {
 
 float FRotator::ClampAxis(float Angle)
 {
-    Angle = fmod(Angle, 360.f); // rat
+    Angle = fmod(Angle, 360.f);
 
     if (Angle < 0.)
         Angle += 360.;

@@ -4,35 +4,23 @@
 
 struct FNetworkObjectInfo
 {
-	/** Pointer to the replicated actor. */
+
 	AActor* Actor;
 
-	/** List of connections that this actor is dormant on */
 	TSet<TWeakObjectPtr<UNetConnection>> DormantConnections;
 
-	/** A list of connections that this actor has recently been dormant on, but the actor doesn't have a channel open yet.
-	*  These need to be differentiated from actors that the client doesn't know about, but there's no explicit list for just those actors.
-	*  (this list will be very transient, with connections being moved off the DormantConnections list, onto this list, and then off once the actor has a channel again)
-	*/
 	TSet<TWeakObjectPtr<UNetConnection>> RecentlyDormantConnections;
 
-	/** Next time to consider replicating the actor. Based on FPlatformTime::Seconds(). */
 	double NextUpdateTime;
 
-	/** Last absolute time in seconds since actor actually sent something during replication */
 	double LastNetReplicateTime;
 
-	/** Optimal delta between replication updates based on how frequently actor properties are actually changing */
 	float OptimalNetUpdateDelta;
 
-	/** Last time this actor was updated for replication via NextUpdateTime
-	* @warning: internal net driver time, not related to WorldSettings.TimeSeconds */
 	float LastNetUpdateTime;
 
-	/** Is this object still pending a full net update due to clients that weren't able to replicate the actor at the time of LastNetUpdateTime */
 	bool bPendingNetUpdate;
 };
-
 
 template< class ObjectType>
 class TSharedPtr
@@ -125,7 +113,6 @@ public:
 		return (X.Value != Y.Value);
 	}
 };
-
 
 struct FActorDestructionInfo
 {
@@ -224,7 +211,6 @@ struct FActorPriority
 			FVector Dir = DestructionInfo->DestroyedPosition - Viewers[i].ViewLocation;
 			double DistSq = Dir.SizeSquared();
 
-			// adjust priority based on distance and whether actor is in front of viewer
 			if ((Viewers[i].ViewDir | Dir) < 0.f)
 			{
 				if (DistSq > NEARSIGHTTHRESHOLDSQUARED)
@@ -252,10 +238,10 @@ enum class EChannelCreateFlags : uint32_t
 
 enum EConnectionState
 {
-	USOCK_Invalid = 0, // Connection is invalid, possibly uninitialized.
-	USOCK_Closed = 1, // Connection permanently closed.
-	USOCK_Pending = 2, // Connection is awaiting connection.
-	USOCK_Open = 3, // Connection is open.
+	USOCK_Invalid = 0,
+	USOCK_Closed = 1,
+	USOCK_Pending = 2,
+	USOCK_Open = 3,
 };
 
 struct FPacketIdRange

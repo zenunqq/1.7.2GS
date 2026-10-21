@@ -109,7 +109,6 @@ public:
         return (T*)UGameplayStatics::FinishSpawningActor(Actor, Transform);
     };
 
-
     template <typename T>
     static T* SpawnActor(UClass* Class, FVector Loc, FRotator Rot = {}, AActor* Owner = nullptr)
     {
@@ -145,14 +144,12 @@ public:
         _Fn->ExecFunction = reinterpret_cast<UFunction::FNativeFuncPtr>(_Detour);
     }
 
-
     template <typename _Ot = void*>
     __forceinline static void ExecHook(const wchar_t* _Name, void* _Detour, _Ot& _Orig = _NpFH)
     {
         UFunction* _Fn = FindObject<UFunction>(_Name);
         ExecHook(_Fn, _Detour, _Orig);
     }
-
 
     template <typename _It>
     static _It* GetInterface(UObject* Object)
@@ -196,7 +193,7 @@ public:
     TArray<void*> FlowStack;
     FFrame* PreviousFrame;
     FOutParmRec* OutParms;
-    uint8_t _Padding1[0x20]; // wtf else do they store here
+    uint8_t _Padding1[0x20];
     UField* PropertyChainForCompiledIn;
     UFunction* CurrentNativeFunction;
     bool bArrayContextFailed;
@@ -230,10 +227,9 @@ static_assert(offsetof(FFrame, Code) == 0x20, "FFrame::Code offset is wrong!");
 static_assert(offsetof(FFrame, MostRecentPropertyAddress) == 0x38, "FFrame::MostRecentPropertyAddress offset is wrong!");
 static_assert(offsetof(FFrame, PropertyChainForCompiledIn) == 0x80, "FFrame::PropertyChainForCompiledIn offset is wrong!");
 
-
 inline std::vector<void(*)()> _HookFuncs;
-#define DefHookOg(_Rt, _Name, ...) static inline _Rt (*_Name##OG)(##__VA_ARGS__); static _Rt _Name(##__VA_ARGS__); 
-#define DefUHookOg(_Name) static inline void (*_Name##OG)(UObject*, FFrame&); static void _Name(UObject*, FFrame&); 
+#define DefHookOg(_Rt, _Name, ...) static inline _Rt (*_Name##OG)(##__VA_ARGS__); static _Rt _Name(##__VA_ARGS__);
+#define DefUHookOg(_Name) static inline void (*_Name##OG)(UObject*, FFrame&); static void _Name(UObject*, FFrame&);
 #define DefUHookOgRet(_Rt, _Name) static inline void (*_Name##OG)(UObject*, FFrame&, _Rt*); static void _Name(UObject *, FFrame&, _Rt*);
 #define InitHooks static void Hook(); static int _AddHook() { _HookFuncs.push_back(Hook); return 0; }; static inline auto _HookAdder = _AddHook();
 #define callOG(_Tr, _Fn, _Th, ...) ([&](){ _Fn->ExecFunction = (UFunction::FNativeFuncPtr) _Th##OG; _Tr->_Th(##__VA_ARGS__); _Fn->ExecFunction = (UFunction::FNativeFuncPtr) _Th; })()

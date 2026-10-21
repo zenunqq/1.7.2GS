@@ -28,7 +28,7 @@ UWorld* GetWorld(AActor* Actor) {
 TArray<TPair<UNetConnection*, TArray<FNetViewer>>> ViewerMap;
 void Replication::BuildViewerMap(UNetDriver* Driver)
 {
-	//Log(L"PC");
+
 	for (auto& Conn : Driver->ClientConnections)
 	{
 		auto Owner = Conn->OwningActor;
@@ -69,19 +69,14 @@ void Replication::BuildViewerMap(UNetDriver* Driver)
 
 float FRand()
 {
-	/*random_device rd;
-	mt19937 gen(rd());
-	uniform_real_distribution<> dis(0, 1);
-	float random_number = (float) dis(gen);
 
-	return random_number;*/
 	constexpr int32 RandMax = 0x00ffffff < RAND_MAX ? 0x00ffffff : RAND_MAX;
 	return (rand() & RandMax) / (float)RandMax;
 }
 
 float fastLerp(float a, float b, float t)
 {
-	//return (a * (1.f - t)) + (b * t);
+
 	return a - (a + b) * t;
 }
 
@@ -97,7 +92,7 @@ __forceinline UActorChannel* Replication::FindChannel(UNetConnection* Conn, TWea
 TArray<TPair<UNetConnection*, TArray<FActorPriority>>> PriorityLists;
 void Replication::BuildPriorityLists(UNetDriver* Driver, float DeltaTime)
 {
-	//Log(L"BCL");
+
 	void (*&CallPreReplication)(AActor*, UNetDriver*) = decltype(CallPreReplication)(ReplicationOffsets::CallPreReplication);
 	void (*&RemoveNetworkActor)(FNetworkObjectList*, AActor*) = decltype(RemoveNetworkActor)(ReplicationOffsets::RemoveNetworkActor);
 	void (*&CloseActorChannel)(UActorChannel*, uint8) = decltype(CloseActorChannel)(ReplicationOffsets::CloseActorChannel);
@@ -167,7 +162,6 @@ void Replication::BuildPriorityLists(UNetDriver* Driver, float DeltaTime)
 			continue;
 		}
 
-
 		ULevel* Level = GetLevel(Actor);
 		if (!Level || Level == Level->OwningWorld->CurrentLevelPendingVisibility || Level == Level->OwningWorld->CurrentLevelPendingInvisibility || Level->bIsAssociatingLevel)
 			continue;
@@ -180,7 +174,6 @@ void Replication::BuildPriorityLists(UNetDriver* Driver, float DeltaTime)
 			auto Channel = FindChannel(Conn, ActorInfo->Actor);
 
 			auto& Viewers = ViewerPair.Second;
-
 
 			bool bLevelInitializedForActor = IsLevelInitializedForActor(Driver, Actor, Conn);
 			bool bRelevantToConn = IsActorRelevantToConnection(Actor, Viewers);
@@ -245,32 +238,10 @@ void Replication::BuildPriorityLists(UNetDriver* Driver, float DeltaTime)
 				CloseActorChannel(Channel, Actor->bTearOff ? 4 : 3);
 		}
 
-		/*if (ActorInfo->LastNetReplicateTime == 0)
-		{
-			ActorInfo->LastNetReplicateTime = Time;
-			ActorInfo->OptimalNetUpdateDelta = 1.f / Actor->NetUpdateFrequency;
-		}
-
-		const float LastReplicateDelta = float(Time - ActorInfo->LastNetReplicateTime);
-
-		if (LastReplicateDelta > 2.f)
-		{
-			if (Actor->MinNetUpdateFrequency == 0.f)
-			{
-				Actor->MinNetUpdateFrequency = 2.f;
-			}
-
-			const float MinOptimalDelta = 1.f / Actor->NetUpdateFrequency;
-			const float MaxOptimalDelta = max(1.f / Actor->MinNetUpdateFrequency, MinOptimalDelta);
-
-			const float Alpha = clamp((LastReplicateDelta - 2.f) / 5.f, 0.f, 1.f);
-			ActorInfo->OptimalNetUpdateDelta = fastLerp(MinOptimalDelta, MaxOptimalDelta, Alpha);
-		}*/
-
 		if (!ActorInfo->bPendingNetUpdate)
 		{
-			//constexpr bool bUseAdapativeNetFrequency = false;
-			const float NextUpdateDelta = /*bUseAdapativeNetFrequency ? ActorInfo->OptimalNetUpdateDelta : */1.f / Actor->NetUpdateFrequency;
+
+			const float NextUpdateDelta = 1.f / Actor->NetUpdateFrequency;
 
 			float ServerTickTime = 1.f / std::clamp(1.f / DeltaTime, 1.f, 30.f);
 			ActorInfo->NextUpdateTime = Time + FRand() * ServerTickTime + NextUpdateDelta;
@@ -280,7 +251,6 @@ void Replication::BuildPriorityLists(UNetDriver* Driver, float DeltaTime)
 		{
 			ActorInfo->bPendingNetUpdate = false;
 		}
-
 
 		if (bAnyRelevant)
 			CallPreReplication(Actor, Driver);
@@ -313,7 +283,7 @@ FNetViewer Replication::ConstructNetViewer(UNetConnection* NetConnection)
 
 	if (ViewingController)
 	{
-		//FRotator ViewRotation = ViewingController->ControlRotation;
+
 		FRotator ViewRotation;
 		Player::GetPlayerViewPoint(ViewingController, NewNetViewer.ViewLocation, ViewRotation);
 		constexpr auto radian = 0.017453292519943295f;
@@ -362,16 +332,16 @@ bool Replication::ShouldActorGoDormant(AActor* Actor, const TArray<FNetViewer>& 
 {
 	if (Actor->NetDormancy <= ENetDormancy::DORM_Awake || !Channel || Channel->bPendingDormancy || Channel->Dormant)
 	{
-		// Either shouldn't go dormant, or is already dormant
+
 		return false;
 	}
 
 	if (Actor->NetDormancy == ENetDormancy::DORM_DormantPartial)
 	{
-		//Log(L"dorm partial??? %s", Actor->GetWName().c_str());
+
 		for (int32 viewerIdx = 0; viewerIdx < ConnectionViewers.Num(); viewerIdx++)
 		{
-			//if (!GetNetDormancy(Actor, ConnectionViewers[viewerIdx].ViewLocation, ConnectionViewers[viewerIdx].ViewDir, ConnectionViewers[viewerIdx].InViewer, ConnectionViewers[viewerIdx].ViewTarget, Channel, Time, bLowNetBandwidth))
+
 			{
 				return false;
 			}
@@ -434,7 +404,7 @@ void Replication::SetChannelActorForDestroy(UActorChannel* Channel, FActorDestru
 }
 
 int Replication::ProcessPrioritizedActors(UNetDriver* Driver, UNetConnection* Conn, TArray<FActorPriority>& PriorityActors) {
-	//Log(L"PPA");
+
 	UActorChannel* (*&CreateChannel)(UNetConnection*, int, bool, int32_t) = decltype(CreateChannel)(ReplicationOffsets::CreateChannel);
 	__int64 (*&SetChannelActor)(UActorChannel*, AActor*, int) = decltype(SetChannelActor)(ReplicationOffsets::SetChannelActor);
 	__int64 (*&ReplicateActor)(UActorChannel*) = decltype(ReplicateActor)(ReplicationOffsets::ReplicateActor);
@@ -465,7 +435,6 @@ int Replication::ProcessPrioritizedActors(UNetDriver* Driver, UNetConnection* Co
 		{
 			auto Actor = ActorInfo->Actor;
 
-
 			if (!Channel)
 			{
 				Channel = CreateChannel(Conn, 2, true, -1);
@@ -482,13 +451,7 @@ int Replication::ProcessPrioritizedActors(UNetDriver* Driver, UNetConnection* Co
 				if (IsNetReady(Channel, false))
 					if (ReplicateActor(Channel))
 					{
-						/*auto TimeSeconds = GetTimeSeconds(Driver->World);
-						const float MinOptimalDelta = 1.f / Actor->NetUpdateFrequency;
-						const float MaxOptimalDelta = max(1.f / Actor->MinNetUpdateFrequency, MinOptimalDelta);
-						const float DeltaBetweenReplications = float(TimeSeconds - ActorInfo->LastNetReplicateTime);
 
-						ActorInfo->OptimalNetUpdateDelta = clamp(DeltaBetweenReplications * 0.7f, MinOptimalDelta, MaxOptimalDelta);
-						ActorInfo->LastNetReplicateTime = TimeSeconds;*/
 					}
 					else
 						Actor->ForceNetUpdate();
@@ -515,14 +478,12 @@ void Replication::ServerReplicateActors(UNetDriver* Driver, float DeltaTime)
 	auto WorldSettings = Driver->World->PersistentLevel->WorldSettings;
 	void (*&CloseConnection)(UNetConnection*) = decltype(CloseConnection)(ReplicationOffsets::CloseConnection);
 
-
 	for (auto& PriorityListPair : PriorityLists)
 	{
 		auto Conn = PriorityListPair.First;
 
 		if (!Conn->ViewTarget)
 			continue;
-
 
 		auto ViewerPair = ViewerMap.Search([&](TPair<UNetConnection*, TArray<FNetViewer>>& Pair)
 			{

@@ -14,6 +14,5 @@ private:
 	DefUHookOg(ServerSpawnDeco);
 	static void ServerCreateBuildingAndSpawnDeco(UObject*, FFrame&);
 
-
 	InitHooks;
 };
