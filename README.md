@@ -2,5 +2,6 @@
 
 <br>
 
-## Open source gameserver for Fortnite 1.7.2
+## smth for u skids
+.gg/kyrofn
 
