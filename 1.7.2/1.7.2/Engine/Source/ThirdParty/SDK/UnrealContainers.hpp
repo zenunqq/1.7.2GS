@@ -100,7 +100,7 @@ public:
 	inline TStdArrayIterator<ArrayElementType> end() { return TStdArrayIterator<ArrayElementType>(*this, NumElements); }
 	inline TStdArrayIterator<ArrayElementType> end() const { return TStdArrayIterator<ArrayElementType>(*this, NumElements); }
 };
-#include "Offsets.h"
+#include "Config.h"
 #include <string_view>
 
 namespace UC

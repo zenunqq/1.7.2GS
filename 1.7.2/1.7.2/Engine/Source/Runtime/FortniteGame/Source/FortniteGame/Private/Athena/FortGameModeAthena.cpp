@@ -1,9 +1,9 @@
 #include "pch.h"
-#include "GameMode.h"
-#include "Misc.h"
-#include "Abilities.h"
-#include "Player.h"
-#include "Inventory.h"
+#include "FortGameModeAthena.h"
+#include "GameEngine.h"
+#include "AbilitySystemComponent.h"
+#include "FortPlayerControllerAthena.h"
+#include "FortInventory.h"
 
 void SetPlaylist(AFortGameModeAthena* GameMode) {
 	auto GameState = (AFortGameStateAthena*)GameMode->GameState;

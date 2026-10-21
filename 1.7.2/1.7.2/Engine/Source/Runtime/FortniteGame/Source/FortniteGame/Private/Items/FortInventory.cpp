@@ -1,7 +1,7 @@
 #include "pch.h"
-#include "Utils.h"
-#include "Inventory.h"
-#include "Player.h"
+#include "HookingLibrary.h"
+#include "FortInventory.h"
+#include "FortPlayerControllerAthena.h"
 
 FFortRangedWeaponStats* Inventory::GetStats(UFortWeaponItemDefinition* Def)
 {

@@ -1,7 +1,7 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "pch.h"
-#include "Utils.h"
-#include "Replication.h"
+#include "HookingLibrary.h"
+#include "NetDriver.h"
 
 void Main() {
     ReplicationOffsets::Init();

@@ -1,6 +1,6 @@
 #include "pch.h"
-#include "Building.h"
-#include "Inventory.h"
+#include "BuildingActor.h"
+#include "FortInventory.h"
 
 UFortResourceItemDefinition* Building::GetResourceItemDefinition(EFortResourceType Type)
 {

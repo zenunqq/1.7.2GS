@@ -1,6 +1,6 @@
 #include "pch.h"
-#include "Player.h"
-#include "Abilities.h"
+#include "FortPlayerControllerAthena.h"
+#include "AbilitySystemComponent.h"
 
 
 void Player::ServerReadyToStartMatch(UObject* Context, FFrame& Stack)

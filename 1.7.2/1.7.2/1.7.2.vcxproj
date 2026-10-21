@@ -79,8 +79,10 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Engine\Source\ThirdParty\SDK;$(ProjectDir)Engine\Source\ThirdParty\MinHook\Include;$(ProjectDir)Engine\Plugins\HookingLibrary;$(ProjectDir)Engine\Source\Runtime\FortniteGame\Source\FortniteGame\Public\Athena;$(ProjectDir)Engine\Source\Runtime\FortniteGame\Source\FortniteGame\Public\Building;$(ProjectDir)Engine\Source\Runtime\FortniteGame\Source\FortniteGame\Public\Items;$(ProjectDir)Engine\Source\Runtime\Engine\Classes\Engine;$(ProjectDir)Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
+      <AdditionalLibraryDirectories>$(ProjectDir)Engine\Source\ThirdParty\MinHook\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
@@ -96,8 +98,10 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Engine\Source\ThirdParty\SDK;$(ProjectDir)Engine\Source\ThirdParty\MinHook\Include;$(ProjectDir)Engine\Plugins\HookingLibrary;$(ProjectDir)Engine\Source\Runtime\FortniteGame\Source\FortniteGame\Public\Athena;$(ProjectDir)Engine\Source\Runtime\FortniteGame\Source\FortniteGame\Public\Building;$(ProjectDir)Engine\Source\Runtime\FortniteGame\Source\FortniteGame\Public\Items;$(ProjectDir)Engine\Source\Runtime\Engine\Classes\Engine;$(ProjectDir)Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
+      <AdditionalLibraryDirectories>$(ProjectDir)Engine\Source\ThirdParty\MinHook\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
@@ -113,9 +117,11 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Engine\Source\ThirdParty\SDK;$(ProjectDir)Engine\Source\ThirdParty\MinHook\Include;$(ProjectDir)Engine\Plugins\HookingLibrary;$(ProjectDir)Engine\Source\Runtime\FortniteGame\Source\FortniteGame\Public\Athena;$(ProjectDir)Engine\Source\Runtime\FortniteGame\Source\FortniteGame\Public\Building;$(ProjectDir)Engine\Source\Runtime\FortniteGame\Source\FortniteGame\Public\Items;$(ProjectDir)Engine\Source\Runtime\Engine\Classes\Engine;$(ProjectDir)Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
+      <AdditionalLibraryDirectories>$(ProjectDir)Engine\Source\ThirdParty\MinHook\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
@@ -131,9 +137,11 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Engine\Source\ThirdParty\SDK;$(ProjectDir)Engine\Source\ThirdParty\MinHook\Include;$(ProjectDir)Engine\Plugins\HookingLibrary;$(ProjectDir)Engine\Source\Runtime\FortniteGame\Source\FortniteGame\Public\Athena;$(ProjectDir)Engine\Source\Runtime\FortniteGame\Source\FortniteGame\Public\Building;$(ProjectDir)Engine\Source\Runtime\FortniteGame\Source\FortniteGame\Public\Items;$(ProjectDir)Engine\Source\Runtime\Engine\Classes\Engine;$(ProjectDir)Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
+      <AdditionalLibraryDirectories>$(ProjectDir)Engine\Source\ThirdParty\MinHook\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
@@ -142,43 +150,43 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Abilities.h" />
-    <ClInclude Include="Building.h" />
-    <ClInclude Include="GameMode.h" />
-    <ClInclude Include="Inventory.h" />
-    <ClInclude Include="Misc.h" />
-    <ClInclude Include="Offsets.h" />
+    <ClInclude Include="Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Public\AbilitySystemComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\FortniteGame\Source\FortniteGame\Public\Building\BuildingActor.h" />
+    <ClInclude Include="Engine\Source\Runtime\FortniteGame\Source\FortniteGame\Public\Athena\FortGameModeAthena.h" />
+    <ClInclude Include="Engine\Source\Runtime\FortniteGame\Source\FortniteGame\Public\Items\FortInventory.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\GameEngine.h" />
+    <ClInclude Include="Config.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="PropertyFixup.hpp" />
-    <ClInclude Include="Replication.h" />
-    <ClInclude Include="UnrealContainers.hpp" />
-    <ClInclude Include="Utils.h" />
+    <ClInclude Include="Engine\Source\Runtime\FortniteGame\Source\FortniteGame\Public\Athena\FortPlayerControllerAthena.h" />
+    <ClInclude Include="Engine\Source\ThirdParty\SDK\PropertyFixup.hpp" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\NetDriver.h" />
+    <ClInclude Include="Engine\Source\ThirdParty\SDK\UnrealContainers.hpp" />
+    <ClInclude Include="Engine\Plugins\HookingLibrary\HookingLibrary.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Abilities.cpp" />
-    <ClCompile Include="Building.cpp" />
-    <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="GameMode.cpp" />
-    <ClCompile Include="Inventory.cpp" />
-    <ClCompile Include="Misc.cpp" />
+    <ClCompile Include="Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Private\AbilitySystemComponent_Abilities.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\FortniteGame\Source\FortniteGame\Private\Building\BuildingActor.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Windows\Private\LaunchWindows.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\FortniteGame\Source\FortniteGame\Private\Athena\FortGameModeAthena.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\FortniteGame\Source\FortniteGame\Private\Items\FortInventory.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\GameEngine.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="Replication.cpp" />
-    <ClCompile Include="SDK\Basic.cpp" />
-    <ClCompile Include="SDK\CoreUObject_functions.cpp" />
-    <ClCompile Include="SDK\Engine_functions.cpp" />
-    <ClCompile Include="SDK\FortniteGame_functions.cpp" />
-    <ClCompile Include="SDK\GameplayAbilities_functions.cpp" />
-    <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\FortniteGame\Source\FortniteGame\Private\Athena\FortPlayerControllerAthena.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\NetDriver.cpp" />
+    <ClCompile Include="Engine\Source\ThirdParty\SDK\SDK\Basic.cpp" />
+    <ClCompile Include="Engine\Source\ThirdParty\SDK\SDK\CoreUObject_functions.cpp" />
+    <ClCompile Include="Engine\Source\ThirdParty\SDK\SDK\Engine_functions.cpp" />
+    <ClCompile Include="Engine\Source\ThirdParty\SDK\SDK\FortniteGame_functions.cpp" />
+    <ClCompile Include="Engine\Source\ThirdParty\SDK\SDK\GameplayAbilities_functions.cpp" />
+    <ClCompile Include="Engine\Plugins\HookingLibrary\HookingLibrary.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="NameCollisions.inl" />
+    <None Include="Engine\Source\ThirdParty\SDK\NameCollisions.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

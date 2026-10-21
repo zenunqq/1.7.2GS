@@ -1,6 +1,6 @@
 #include "pch.h"
-#include "Misc.h"
-#include "Replication.h"
+#include "GameEngine.h"
+#include "NetDriver.h"
 
 int Misc::GetNetMode() {
 	return 1;

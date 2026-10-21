@@ -21,89 +21,89 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Offsets.h">
+    <ClInclude Include="Config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PropertyFixup.hpp">
+    <ClInclude Include="Engine\Source\ThirdParty\SDK\PropertyFixup.hpp">
       <Filter>SDK</Filter>
     </ClInclude>
-    <ClInclude Include="UnrealContainers.hpp">
+    <ClInclude Include="Engine\Source\ThirdParty\SDK\UnrealContainers.hpp">
       <Filter>SDK</Filter>
     </ClInclude>
-    <ClInclude Include="Utils.h">
+    <ClInclude Include="Engine\Plugins\HookingLibrary\HookingLibrary.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Misc.h">
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\GameEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameMode.h">
+    <ClInclude Include="Engine\Source\Runtime\FortniteGame\Source\FortniteGame\Public\Athena\FortGameModeAthena.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
+    <ClInclude Include="Engine\Source\Runtime\FortniteGame\Source\FortniteGame\Public\Athena\FortPlayerControllerAthena.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Abilities.h">
+    <ClInclude Include="Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Public\AbilitySystemComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Replication.h">
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\NetDriver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Inventory.h">
+    <ClInclude Include="Engine\Source\Runtime\FortniteGame\Source\FortniteGame\Public\Items\FortInventory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Building.h">
+    <ClInclude Include="Engine\Source\Runtime\FortniteGame\Source\FortniteGame\Public\Building\BuildingActor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dllmain.cpp">
+    <ClCompile Include="Engine\Source\Runtime\Windows\Private\LaunchWindows.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SDK\Basic.cpp">
+    <ClCompile Include="Engine\Source\ThirdParty\SDK\SDK\Basic.cpp">
       <Filter>SDK</Filter>
     </ClCompile>
-    <ClCompile Include="SDK\CoreUObject_functions.cpp">
+    <ClCompile Include="Engine\Source\ThirdParty\SDK\SDK\CoreUObject_functions.cpp">
       <Filter>SDK</Filter>
     </ClCompile>
-    <ClCompile Include="SDK\Engine_functions.cpp">
+    <ClCompile Include="Engine\Source\ThirdParty\SDK\SDK\Engine_functions.cpp">
       <Filter>SDK</Filter>
     </ClCompile>
-    <ClCompile Include="SDK\GameplayAbilities_functions.cpp">
+    <ClCompile Include="Engine\Source\ThirdParty\SDK\SDK\GameplayAbilities_functions.cpp">
       <Filter>SDK</Filter>
     </ClCompile>
-    <ClCompile Include="SDK\FortniteGame_functions.cpp">
+    <ClCompile Include="Engine\Source\ThirdParty\SDK\SDK\FortniteGame_functions.cpp">
       <Filter>SDK</Filter>
     </ClCompile>
-    <ClCompile Include="Utils.cpp">
+    <ClCompile Include="Engine\Plugins\HookingLibrary\HookingLibrary.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Misc.cpp">
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\GameEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameMode.cpp">
+    <ClCompile Include="Engine\Source\Runtime\FortniteGame\Source\FortniteGame\Private\Athena\FortGameModeAthena.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp">
+    <ClCompile Include="Engine\Source\Runtime\FortniteGame\Source\FortniteGame\Private\Athena\FortPlayerControllerAthena.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Abilities.cpp">
+    <ClCompile Include="Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Private\AbilitySystemComponent_Abilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Replication.cpp">
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\NetDriver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Inventory.cpp">
+    <ClCompile Include="Engine\Source\Runtime\FortniteGame\Source\FortniteGame\Private\Items\FortInventory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Building.cpp">
+    <ClCompile Include="Engine\Source\Runtime\FortniteGame\Source\FortniteGame\Private\Building\BuildingActor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="NameCollisions.inl">
+    <None Include="Engine\Source\ThirdParty\SDK\NameCollisions.inl">
       <Filter>SDK</Filter>
     </None>
   </ItemGroup>

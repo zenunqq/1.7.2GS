@@ -1,7 +1,7 @@
 #include "pch.h"
-#include "Replication.h"
-#include "Misc.h"
-#include "Player.h"
+#include "NetDriver.h"
+#include "GameEngine.h"
+#include "FortPlayerControllerAthena.h"
 
 ULevel* GetLevel(AActor* Actor) {
 	auto Outer = Actor->Outer;

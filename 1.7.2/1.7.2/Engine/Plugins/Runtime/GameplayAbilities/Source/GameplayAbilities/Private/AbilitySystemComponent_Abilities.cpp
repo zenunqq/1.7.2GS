@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Abilities.h"
+#include "AbilitySystemComponent.h"
 
 void ConsumeAllReplicatedData(UFortAbilitySystemComponentAthena* AbilitySystemComponent, FGameplayAbilitySpecHandle AbilityHandle, FPredictionKey AbilityOriginalPredictionKey) {
     auto& AbilityTargetDataMap = *(FGameplayAbilityReplicatedDataContainer*)(__int64(AbilitySystemComponent) + offsetof(UAbilitySystemComponent, ActivatableAbilities) + sizeof(FGameplayAbilitySpecContainer));
