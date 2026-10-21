@@ -73,8 +73,8 @@ FFortItemEntry* Inventory::MakeItemEntry(UFortItemDefinition* ItemDefinition, in
 	ItemEntry->Level = Level;
 	if (auto Weapon = ItemDefinition->Cast<UFortWeaponItemDefinition>())
 	{
-		auto Stats = GetStats(Weapon);
-		ItemEntry->LoadedAmmo = Stats->ClipSize;
+		if (auto Stats = GetStats(Weapon))
+			ItemEntry->LoadedAmmo = Stats->ClipSize;
 	}
 
 	return ItemEntry;
@@ -93,9 +93,13 @@ void Inventory::TriggerInventoryUpdate(AFortPlayerController* PlayerController, 
 
 UFortWorldItem* Inventory::GiveItem(AFortPlayerController* PlayerController, UFortItemDefinition* Def, int Count, int LoadedAmmo, int Level, bool ShowPickupNoti, bool updateInventory, int PhantomReserveAmmo)
 {
-	if (!PlayerController || !Def || !Count)
+	if (!PlayerController || !PlayerController->WorldInventory || !Def || !Count)
 		return nullptr;
+
 	UFortWorldItem* Item = (UFortWorldItem*)Def->CreateTemporaryItemInstanceBP(Count, Level);
+	if (!Item)
+		return nullptr;
+
 	Item->SetOwningControllerForTemporaryItem(PlayerController);
 	Item->ItemEntry.LoadedAmmo = LoadedAmmo;
 
@@ -110,11 +114,8 @@ UFortWorldItem* Inventory::GiveItem(AFortPlayerController* PlayerController, UFo
 	PlayerController->WorldInventory->Inventory.ReplicatedEntries.Add(Item->ItemEntry);
 	PlayerController->WorldInventory->Inventory.ItemInstances.Add(Item);
 
-	if (auto Gadget = Def->Cast<UFortGadgetItemDefinition>())
-	{
-		//((bool(*)(UFortGadgetItemDefinition*, IInterface*, UFortWorldItem*, uint8)) (Sarah::Offsets::ImageBase + 0x6d85900))(Gadget, Utils::GetInterface<IFortInventoryOwnerInterface>(PlayerController), Item, 1);
-	}
-	PlayerController->QuickBars->ServerAddItemInternal(Item->ItemEntry.ItemGuid, GetQuickbar(Def), -1);
+	if (PlayerController->QuickBars)
+		PlayerController->QuickBars->ServerAddItemInternal(Item->ItemEntry.ItemGuid, GetQuickbar(Def), -1);
 
 	if (updateInventory)
 		TriggerInventoryUpdate(PlayerController, &Item->ItemEntry);
@@ -155,7 +156,16 @@ AFortPickupAthena* Inventory::SpawnPickup(FVector Loc, FFortItemEntry& Entry, AF
 
 AFortPickupAthena* Inventory::SpawnPickup(FVector Loc, UFortItemDefinition* ItemDefinition, int Count, int LoadedAmmo, AFortPlayerPawn* Pawn, bool Toss, bool bRandomRotation)
 {
-	return SpawnPickup(Loc, *MakeItemEntry(ItemDefinition, Count, 0), Pawn, -1, Toss, true, bRandomRotation);
+	if (!ItemDefinition)
+		return nullptr;
+
+	auto Entry = MakeItemEntry(ItemDefinition, Count, 0);
+	if (LoadedAmmo > 0)
+		Entry->LoadedAmmo = LoadedAmmo;
+
+	auto Pickup = SpawnPickup(Loc, *Entry, Pawn, -1, Toss, bRandomRotation, true);
+	delete Entry;
+	return Pickup;
 }
 
 void Inventory::ReplaceEntry(AFortPlayerController* PlayerController, FFortItemEntry& Entry)
@@ -172,40 +182,56 @@ void Inventory::ReplaceEntry(AFortPlayerController* PlayerController, FFortItemE
 
 void Inventory::Remove(AFortPlayerController* PlayerController, FGuid Guid)
 {
-	if (!PlayerController)
+	if (!PlayerController || !PlayerController->WorldInventory)
 		return;
-	auto ItemEntryIdx = PlayerController->WorldInventory->Inventory.ReplicatedEntries.SearchIndex([&](FFortItemEntry& entry) { return entry.ItemGuid == Guid; });
-	auto ItemEntry = PlayerController->WorldInventory->Inventory.ReplicatedEntries.Search([&](FFortItemEntry& entry)
-		{ return entry.ItemGuid == Guid; });
-	if (ItemEntryIdx != -1)
-		PlayerController->WorldInventory->Inventory.ReplicatedEntries.Remove(ItemEntryIdx);
-	auto ItemInstanceIdx = PlayerController->WorldInventory->Inventory.ItemInstances.SearchIndex([&](UFortWorldItem* entry) { return entry->ItemEntry.ItemGuid == Guid; });
-	auto ItemInstance = PlayerController->WorldInventory->Inventory.ItemInstances.Search([&](UFortWorldItem* entry)
-		{ return entry->ItemEntry.ItemGuid == Guid; });
-	auto Instance = ItemInstance ? *ItemInstance : nullptr;
-	if (ItemInstanceIdx != -1) PlayerController->WorldInventory->Inventory.ItemInstances.Remove(ItemInstanceIdx);
 
-	if (!ItemEntry)
-		return TriggerInventoryUpdate(PlayerController, nullptr);;
-	Log(L"aa");
+	auto& Replicated = PlayerController->WorldInventory->Inventory.ReplicatedEntries;
+	auto& Instances = PlayerController->WorldInventory->Inventory.ItemInstances;
 
-	auto QuickBar = GetQuickbar(ItemEntry->ItemDefinition) == EFortQuickBars::Primary ? PlayerController->QuickBars->PrimaryQuickBar : PlayerController->QuickBars->SecondaryQuickBar;
-	int i = 0;
-	for (auto& Slot : QuickBar.Slots)
+	auto EntryIndex = Replicated.SearchIndex([&](FFortItemEntry& Entry) { return Entry.ItemGuid == Guid; });
+	if (EntryIndex == -1)
 	{
-		for (auto& Item : Slot.Items) // WHY
-		{
-			if (Item == Guid)
-			{
-				goto _Out;
-			}
-		}
-		i++;
+		auto InstanceIndex = Instances.SearchIndex([&](UFortWorldItem* Item) { return Item->ItemEntry.ItemGuid == Guid; });
+		if (InstanceIndex != -1)
+			Instances.Remove(InstanceIndex);
+		return TriggerInventoryUpdate(PlayerController, nullptr);
 	}
-	goto _Skip;
-_Out:
-	PlayerController->QuickBars->EmptySlot(GetQuickbar(ItemEntry->ItemDefinition), i);
-	PlayerController->QuickBars->ServerRemoveItemInternal(Guid, false, true);
-_Skip:
+
+	auto Definition = Replicated[EntryIndex].ItemDefinition;
+	Replicated.Remove(EntryIndex);
+
+	auto InstanceIndex = Instances.SearchIndex([&](UFortWorldItem* Item) { return Item->ItemEntry.ItemGuid == Guid; });
+	if (InstanceIndex != -1)
+		Instances.Remove(InstanceIndex);
+
+	if (PlayerController->QuickBars)
+	{
+		auto Type = GetQuickbar(Definition);
+		auto& QuickBar = Type == EFortQuickBars::Primary ? PlayerController->QuickBars->PrimaryQuickBar : PlayerController->QuickBars->SecondaryQuickBar;
+
+		int SlotIndex = -1;
+		int Index = 0;
+		for (auto& Slot : QuickBar.Slots)
+		{
+			for (auto& Item : Slot.Items)
+			{
+				if (Item == Guid)
+				{
+					SlotIndex = Index;
+					break;
+				}
+			}
+			if (SlotIndex != -1)
+				break;
+			Index++;
+		}
+
+		if (SlotIndex != -1)
+		{
+			PlayerController->QuickBars->EmptySlot(Type, SlotIndex);
+			PlayerController->QuickBars->ServerRemoveItemInternal(Guid, false, true);
+		}
+	}
+
 	TriggerInventoryUpdate(PlayerController, nullptr);
 }
